@@ -6,6 +6,8 @@
 # I assume that docker is installed
 docker-compose up -d --build
 
+composer install -d www/
+
 # Function to wait for PostgreSQL to be ready
 echo "Waiting for PostgreSQL in container yii_postgres to be ready..."
 
