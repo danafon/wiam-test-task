@@ -1,0 +1,43 @@
+networks:
+  yii:
+    name: yii
+
+services:
+  postgres:
+    container_name: yii_postgres
+    image: postgres:16.4
+    ports:
+      - 5432:5432 # to connect to DBeaver
+    volumes:
+      - ./postgres-data:/var/lib/postgresql
+      # - ./my-postgres.conf:/etc/postgresql/postgresql.conf
+    environment:
+      POSTGRES_PASSWORD: letmein
+      POSTGRES_USER: tester
+      POSTGRES_DB: app
+    networks:
+      - yii
+
+  php:
+    container_name: yii_php
+    build: ./images/php82fpm
+    volumes:
+      - ./www:/var/www
+      # - ./php.ini:/usr/local/etc/php/conf.d/php.ini
+    networks:
+      - yii
+    depends_on:
+      - postgres
+
+  nginx:
+    container_name: yii_nginx
+    image: nginx:1.27
+    ports:
+      - 80:80
+    volumes:
+      - ./www:/var/www
+      - ./vhost.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - yii
+    depends_on:
+      - php
